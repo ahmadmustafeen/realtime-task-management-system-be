@@ -37,8 +37,13 @@ export class AuthService {
       updatedAt: new Date(),
     });
     await this.userRepository.save(user);
+    console.log({ user });
 
-    const token = this.jwtService.sign({ sub: user.id, email: user.email });
+    const token = this.jwtService.sign({
+      sub: user.id,
+      email: user.email,
+      role: user.role,
+    });
 
     return {
       message: 'User registered successfully',
@@ -63,7 +68,9 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const payload = { sub: user.id, email: user.email };
+    console.log({ user });
+
+    const payload = { sub: user.id, email: user.email, role: user.role };
     const token = this.jwtService.sign(payload);
 
     return {

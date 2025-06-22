@@ -1,10 +1,15 @@
-import { NestFactory } from '@nestjs/core';
+import { NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { JwtExceptionFilter } from './auth/jwt-exception.filter'; // Add this import
+import { RolesGuard } from './auth/roles.guard';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
+  app.useGlobalGuards(
+    new JwtAuthGuard(app.get(Reflector)),
+    new RolesGuard(app.get(Reflector)),
+  );
   // 🔍 Log every incoming request
   app.use((req, res, next) => {
     console.log('[MAIN] JWT_SECRET:', process.env.JWT_SECRET);
@@ -21,7 +26,6 @@ async function bootstrap() {
     credentials: true,
   });
 
-  // 🛡️ Catch 401 Unauthorized errors
   app.useGlobalFilters(new JwtExceptionFilter());
 
   await app.listen(process.env.PORT ?? 3000);

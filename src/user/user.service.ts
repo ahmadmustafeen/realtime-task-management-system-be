@@ -23,4 +23,8 @@ export class UserService {
   async findAll() {
     return this.userRepo.find();
   }
+
+  async remove(id: string): Promise<void> {
+    await this.userRepo.delete(id);
+  }
 }

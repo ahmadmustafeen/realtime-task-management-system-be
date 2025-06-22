@@ -5,6 +5,7 @@ import { ExtractJwt, Strategy, StrategyOptions } from 'passport-jwt';
 export interface JwtPayload {
   sub: string;
   email: string;
+  role: string;
 }
 
 @Injectable()
@@ -26,11 +27,12 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   // eslint-disable-next-line @typescript-eslint/require-await
   async validate(
     payload: JwtPayload,
-  ): Promise<{ userId: string; email: string }> {
+  ): Promise<{ userId: string; email: string; role: string }> {
     console.log('[JWT STRATEGY] Payload:', payload);
     return {
       userId: payload.sub,
       email: payload.email,
+      role: payload.role,
     };
   }
 }
