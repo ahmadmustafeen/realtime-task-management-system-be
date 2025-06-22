@@ -38,7 +38,13 @@ export class AuthService {
     });
     await this.userRepository.save(user);
 
-    return { message: 'User registered successfully' };
+    const token = this.jwtService.sign({ sub: user.id });
+
+    return {
+      message: 'User registered successfully',
+      token,
+      user: { ...user, password: undefined },
+    };
   }
 
   async login(data: { email: string; password: string }) {
@@ -63,10 +69,8 @@ export class AuthService {
       message: 'Login successful',
       token,
       user: {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
+        ...user,
+        password: undefined,
       },
     };
   }
