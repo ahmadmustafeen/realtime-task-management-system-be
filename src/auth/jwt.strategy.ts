@@ -1,22 +1,36 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { ExtractJwt, Strategy } from 'passport-jwt';
+import { ExtractJwt, Strategy, StrategyOptions } from 'passport-jwt';
+
+export interface JwtPayload {
+  sub: string;
+  email: string;
+}
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor() {
-    console.log('JWT payload:', ExtractJwt.fromAuthHeaderAsBearerToken());
-
-    super({
+    const options: StrategyOptions = {
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: process.env.JWT_SECRET || 'your_jwt_secret',
-    });
+      secretOrKey: process.env.JWT_SECRET!,
+    };
+
+    super(options);
+
+    console.log(
+      '[JWT STRATEGY] Initialized with secret:',
+      process.env.JWT_SECRET,
+    );
   }
 
   // eslint-disable-next-line @typescript-eslint/require-await
-  async validate(payload: { sub: string; email: string }) {
-    // You can log here for debugging
-    console.log('JWT payload:', payload);
-    return { userId: payload.sub, email: payload.email }; // This becomes req.user
+  async validate(
+    payload: JwtPayload,
+  ): Promise<{ userId: string; email: string }> {
+    console.log('[JWT STRATEGY] Payload:', payload);
+    return {
+      userId: payload.sub,
+      email: payload.email,
+    };
   }
 }

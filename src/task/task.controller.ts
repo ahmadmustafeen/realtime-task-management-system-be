@@ -4,8 +4,8 @@ import {
   Get,
   Param,
   Body,
-  Patch,
   Delete,
+  Put,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { Task } from './entities/task.entity';
@@ -30,7 +30,7 @@ export class TaskController {
     return this.taskService.findOne(id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(
     @Param('id') id: string,
     @Body() updateData: Partial<Task>,
